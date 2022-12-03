@@ -21,7 +21,7 @@ tasks:
     desc: Run 'goimports' to format go imports
     summary: Runs goimports on all files with -local support, can also replace gofmt
     cmds:
-      - goimports -local github.com/circleci/policy-service -w .
+      - goimports -w .
 
   test:
     desc: Run the tests
@@ -53,7 +53,7 @@ tasks:
     cmds:
       - go mod tidy -v
       - git diff --exit-code -- go.mod go.sum
-  
+
   create-mocks:
     desc: generate mocks
     cmds:

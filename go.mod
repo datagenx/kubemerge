@@ -1,3 +1,3 @@
-module github.com/circleci/external-credentials-service-client
+module github.com/datagenx/kubemerge
 
-go 1.18
+go 1.19

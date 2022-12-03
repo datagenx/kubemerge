@@ -1,76 +1,76 @@
-version: 2.1
+# version: 2.1
 
-executors:
-  go:
-    docker:
-      - image: circleci/go-service:0.1-dev
-        auth:
-          username: $RO_DOCKER_HUB_USERNAME
-          password: $RO_DOCKER_HUB_PASSWORD
+# executors:
+#   go:
+#     docker:
+#       - image: circleci/go-service:0.1-dev
+#         auth:
+#           username: $RO_DOCKER_HUB_USERNAME
+#           password: $RO_DOCKER_HUB_PASSWORD
 
-jobs:
-  lint:
-    executor: go
-    steps:
-      - checkout
-      - run: git config --global url."https://$GITHUB_USER:$GITHUB_TOKEN@github.com/circleci/".insteadOf "https://github.com/circleci/"
-      - run: export GOPRIVATE=github.com/circleci/*
-      - run: go mod download
-      - run: task lint
-      - run: task check-go-mod
+# jobs:
+#   lint:
+#     executor: go
+#     steps:
+#       - checkout
+#       - run: git config --global url."https://$GITHUB_USER:$GITHUB_TOKEN@github.com/circleci/".insteadOf "https://github.com/circleci/"
+#       - run: export GOPRIVATE=github.com/circleci/*
+#       - run: go mod download
+#       - run: task lint
+#       - run: task check-go-mod
 
-  test:
-    executor: go
-    steps:
-      - checkout
-      - run: git config --global url."https://$GITHUB_USER:$GITHUB_TOKEN@github.com/circleci/".insteadOf "https://github.com/circleci/"
-      - run: export GOPRIVATE=github.com/circleci/*
-      - run: go mod download
-      - run: task ci:test RESULTS_DIR=/tmp/test-results
-      - run:
-          name: 'generate coverage report'
-          command: |
-            go test ./... -race -count=1 -coverprofile=coverage.out
-            go tool cover -html=coverage.out -o coverage.html
-            mv coverage.html /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-      - store_test_results:
-          path: /tmp/test-results
+#   test:
+#     executor: go
+#     steps:
+#       - checkout
+#       - run: git config --global url."https://$GITHUB_USER:$GITHUB_TOKEN@github.com/circleci/".insteadOf "https://github.com/circleci/"
+#       - run: export GOPRIVATE=github.com/circleci/*
+#       - run: go mod download
+#       - run: task ci:test RESULTS_DIR=/tmp/test-results
+#       - run:
+#           name: 'generate coverage report'
+#           command: |
+#             go test ./... -race -count=1 -coverprofile=coverage.out
+#             go tool cover -html=coverage.out -o coverage.html
+#             mv coverage.html /tmp/test-results
+#       - store_artifacts:
+#           path: /tmp/test-results
+#       - store_test_results:
+#           path: /tmp/test-results
 
-  publish:
-    executor: go
-    steps:
-      - add_ssh_keys:
-          fingerprints:
-            - '69:50:2f:53:40:38:a7:9c:42:1c:1e:6e:3e:fe:90:aa'
-      - checkout
-      - run:
-          name: Set version
-          command: |
-            patch_version="${CIRCLE_BUILD_NUM}"
-            echo "export EXTERNAL_CREDENTIALS_SERVICE_CLIENT_VERSION=0.0.1-$patch_version" >> "${BASH_ENV}"
-      - run:
-          name: Tag the release
-          command: |
-            git config user.email "securityengineering@circleci.com"
-            git config user.name "Security-Engineering Bot"
-            # Go excts version semantic tags to start with "v".
-            git tag "v$EXTERNAL_CREDENTIALS_SERVICE_CLIENT_VERSION"
-            git push --tags
-workflows:
-  publish:
-    jobs:
-      - lint:
-          context: [dockerhub-readonly, github-readonly]
-      - test:
-          context: [dockerhub-readonly, github-readonly]
-      - publish:
-          context: dockerhub-readonly
-          requires:
-            - lint
-            - test
-          filters:
-            branches:
-              only:
-                - main
+#   publish:
+#     executor: go
+#     steps:
+#       - add_ssh_keys:
+#           fingerprints:
+#             - '69:50:2f:53:40:38:a7:9c:42:1c:1e:6e:3e:fe:90:aa'
+#       - checkout
+#       - run:
+#           name: Set version
+#           command: |
+#             patch_version="${CIRCLE_BUILD_NUM}"
+#             echo "export EXTERNAL_CREDENTIALS_SERVICE_CLIENT_VERSION=0.0.1-$patch_version" >> "${BASH_ENV}"
+#       - run:
+#           name: Tag the release
+#           command: |
+#             git config user.email "securityengineering@circleci.com"
+#             git config user.name "Security-Engineering Bot"
+#             # Go excts version semantic tags to start with "v".
+#             git tag "v$EXTERNAL_CREDENTIALS_SERVICE_CLIENT_VERSION"
+#             git push --tags
+# workflows:
+#   publish:
+#     jobs:
+#       - lint:
+#           context: [dockerhub-readonly, github-readonly]
+#       - test:
+#           context: [dockerhub-readonly, github-readonly]
+#       - publish:
+#           context: dockerhub-readonly
+#           requires:
+#             - lint
+#             - test
+#           filters:
+#             branches:
+#               only:
+#                 - main
