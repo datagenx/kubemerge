@@ -1,4 +1,7 @@
 #!/bin/sh
+
+[ -n $DEBUG ] && set -x
+
 IFS=$'\n\t'
 
 usage() {
@@ -15,6 +18,8 @@ EOF
 merge_config() {
 
     KUBECONFIG=~/.kube/config
+
+    mv ${KUBECONFIG} ${KUBECONFIG}.bak 2>/dev/null
 
     for i in "${@}"; do
         KUBECONFIG = ${KUBECONFIG}:${i}
