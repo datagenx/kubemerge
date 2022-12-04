@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ -n $DEBUG ] && set -x
+#[ -n $DEBUG ] && set -x
 
 IFS=$'\n\t'
 
@@ -10,14 +10,13 @@ usage() {
 
     cat <<EOF
 USAGE:
-  $SELF -f <CONFIG1> <CONFIG2> [<CONFIG3...>] : Combine CONFIG1, CONFIG2.....
-  $SELF -h,--help             : show this message
+  $SELF <CONFIG1> [ <CONFIG2> <CONFIG3...>] : Combine CONFIG1, CONFIG2.....
 EOF
 }
 
 merge_config() {
 
-    KUBECONFIG=~/.kube/config
+    export KUBECONFIG=~/.kube/config
 
     mv ${KUBECONFIG} ${KUBECONFIG}.bak 2>/dev/null
 

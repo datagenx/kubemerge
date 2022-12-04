@@ -16,7 +16,7 @@ You'll need to run command as :
 ## Install
 
 ```shell
-curl -O github.com/datagenx/kubemerge/kubemerge \
+curl -O https://raw.githubusercontent.com/datagenx/kubemerge/main/kubemerge \
     && sudo mv kubemerge /usr/local/bin \
     && sudo chmod +x /usr/local/bin/kubemerge
 ```
