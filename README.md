@@ -1,52 +1,20 @@
-# go-client-template
+# kubemerge
 
-Go Client Template for internal services
+Script to merge mutltiple Kubeconfig file into one
 
-> Note: original credit for this should go to the permissions team and the SecOps team for their collective work on the
-> permissions-client - https://github.com/circleci/permissions-client
-
-
-## TODO
-
-- [ ] Observability integration
-- [ ] Testing
-- [ ] ??
 
 ## Usage
 
-In order to create a new go-client-template, you can use the `NewClient` constructor function within this package.
+In order to merge kubeconfig files
 
-You'll need to pass:
+You'll need to run command as :
 
-- **baseURL** - this is the base URL for the permissions service.
-- **userAgent** - this is the string that identifies your service to the permissions service.
-
-```go
-import example "github.com/circleci/go-client-template"
-
-
-func main() {
-    // define this value within your service's values.yml
-    serviceURL := os.Getenv("MY_SERIVCE_URL")
-    client, err := example.NewClient(serviceURL, "my-super-awesome-service")
-    if err != nil {
-        log.Error(err.Error())
-        return &ecs.Client{}, err
-    }
-
-    err := client.CallSomeAPIEndpoint(context.Background(), "additional argument")
-    // handle err
-}
+```shell
+    kubemerge <full-path-of-config1> [ <full-path-of-config2> ......]
 ```
 
-## Tests
+## Install
 
-```
-task test
-```
-
-or
-
-```
-go test ./... -race -count 1
+```shell
+curl -O github.com/datagenx/kubemerge/kubemerge && mv kubemerge /usr/local/bin && chmod +x /usr/local/bin/kubemerge
 ```

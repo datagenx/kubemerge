@@ -1,0 +1,50 @@
+#!/bin/sh
+IFS=$'\n\t'
+
+usage() {
+    local SELF
+    SELF="kubemerge"
+
+    cat <<EOF
+USAGE:
+  $SELF -f <CONFIG1> <CONFIG2> [<CONFIG3...>] : Combine CONFIG1, CONFIG2.....
+  $SELF -h,--help             : show this message
+EOF
+}
+
+merge_config() {
+
+    KUBECONFIG=~/.kube/config
+
+    for i in "${@}"; do
+        KUBECONFIG = ${KUBECONFIG}:${i}
+    done
+
+    KUBECONFIG=$KUBECONFIG kubectl config view --flatten >~/.kube/config
+
+    echo "Kubeconfig files are merged -  ~/.kube/config"
+}
+
+main() {
+    if [ -z "${KUBECTL:-}" ]; then
+        if hash kubectl 2>/dev/null; then
+            KUBECTL=kubectl
+        elif hash kubectl.exe 2>/dev/null; then
+            KUBECTL=kubectl.exe
+        else
+            echo >&2 "kubectl is not installed"
+            exit 1
+        fi
+    fi
+
+    if [ "$#" -lt 1 ]; then
+        echo "error: missing config files" >&2
+        usage
+        exit 1
+    fi
+
+    merge_config "${@}"
+
+}
+
+main "$@"
